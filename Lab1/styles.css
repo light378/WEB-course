@@ -1,0 +1,83 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Roboto:wght@300;400;500&display=swap');
+
+body {
+    font-family: 'Roboto', sans-serif;
+    background: #f4f7fa;
+    padding-top: 70px;
+}
+
+.navbar {
+    background: linear-gradient(90deg, #1e3c72, #2a5298);
+}
+
+.navbar-brand {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+}
+
+.hero-section {
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #ff512f 100%);
+    padding: 120px 0;
+}
+
+.hero-section h1 {
+    font-family: 'Montserrat', sans-serif;
+}
+
+.hero-stats .badge {
+    background: rgba(255,255,255,0.2);
+    padding: 10px 20px;
+    margin: 5px;
+    font-size: 1rem;
+}
+
+section {
+    background: white;
+    padding: 40px;
+    border-radius: 20px;
+    margin-bottom: 60px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.08);
+}
+
+.section-title {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 2rem;
+    position: relative;
+    display: inline-block;
+    margin-bottom: 25px;
+}
+
+.section-title::after {
+    content: "";
+    display: block;
+    width: 60%;
+    height: 5px;
+    background: linear-gradient(90deg, #ff512f, #f09819);
+    margin-top: 8px;
+    border-radius: 10px;
+}
+
+.table thead {
+    background: #2a5298;
+    color: white;
+}
+
+.table tbody tr:hover {
+    background: #fff5eb;
+    transition: 0.3s;
+}
+
+.infrastructure-card {
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    transition: 0.3s;
+}
+
+.infrastructure-card:hover {
+    transform: translateY(-10px);
+}
+
+footer {
+    background: #1e3c72;
+}

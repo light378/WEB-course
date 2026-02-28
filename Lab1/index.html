@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ПрАТ «ХАРКІВСЬКА ТЕЦ-5»</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+    <div class="container">
+        <a class="navbar-brand" href="#">
+            <i class="fas fa-bolt"></i> ПрАТ «ХАРКІВСЬКА ТЕЦ-5»
+        </a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto align-items-center">
+                <li class="nav-item"><a class="nav-link" href="#about">Про підприємство</a></li>
+                <li class="nav-item"><a class="nav-link" href="#params">Параметри</a></li>
+                <li class="nav-item"><a class="nav-link" href="#scheme">Інфраструктура</a></li>
+                <li class="nav-item"><a class="nav-link" href="#history">Історія</a></li>
+                <li class="nav-item"><a class="nav-link" href="#contacts">Контакти</a></li>
+
+                <li class="nav-item ms-3">
+                    <button id="themeToggle" class="btn btn-outline-light btn-sm">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<header class="hero-section text-white text-center">
+    <div class="container">
+        <h1 class="display-3 fw-bold">ПрАТ «ХАРКІВСЬКА ТЕЦ-5»</h1>
+        <p class="lead fs-4">Одна з найбільших теплоелектроцентралей України</p>
+        <div class="hero-stats mt-4">
+            <span class="badge">540 МВт</span>
+            <span class="badge">1420 Гкал/год</span>
+            <span class="badge">3 енергоблоки</span>
+            <span class="badge">330 м труба</span>
+        </div>
+    </div>
+</header>
+
+<main class="container my-5">
+
+<!-- ПРО ПІДПРИЄМСТВО -->
+<section id="about">
+    <h2 class="section-title">Про підприємство</h2>
+    <div class="row align-items-center">
+        <div class="col-lg-7">
+            <p><strong>ПрАТ «ХАРКІВСЬКА ТЕЦ-5»</strong> — одна з найбільших теплоелектроцентралей України, розташована поблизу села Подвірки Харківського району, на лівому березі річки Уди.</p>
+
+            <p>Станція працює за принципом когенерації — одночасного виробництва електричної та теплової енергії, що значно підвищує ефективність використання палива.</p>
+
+            <p>ТЕЦ забезпечує електроенергією та теплом значну частину Харкова, включаючи житлові райони, промислові підприємства та об'єкти соціальної інфраструктури.</p>
+
+            <p><strong>Основне паливо:</strong> природний газ<br>
+               <strong>Резервне паливо:</strong> мазут М40/М100</p>
+        </div>
+        <div class="col-lg-5">
+            <img src="img/tec5-general.jpg" class="img-fluid rounded shadow mb-3" alt="Харківська ТЕЦ-5">
+            <img src="img/tec5-chimney.jpg" class="img-fluid rounded shadow" alt="Димова труба 330 м">
+        </div>
+    </div>
+</section>
+
+<!-- ТЕХНІЧНІ ПАРАМЕТРИ -->
+<section id="params">
+    <h2 class="section-title">Технічні параметри</h2>
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>Показник</th>
+                    <th>Значення</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td>Встановлена потужність</td><td>540 МВт</td></tr>
+                <tr><td>Теплова потужність</td><td>1420 Гкал/год</td></tr>
+                <tr><td>Кількість енергоблоків</td><td>3</td></tr>
+                <tr><td>Потужність блоків</td><td>2 × 120 МВт + 300 МВт</td></tr>
+                <tr><td>Висота димової труби</td><td>330 м</td></tr>
+                <tr><td>Площа території</td><td>218 га</td></tr>
+                <tr><td>Напруга видачі</td><td>10,5 / 110 / 220 кВ</td></tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<!-- ІНФРАСТРУКТУРА -->
+<section id="scheme">
+    <h2 class="section-title">Інфраструктура</h2>
+    <div class="row g-4">
+        <div class="col-md-6">
+            <div class="card infrastructure-card">
+                <img src="img/tec5-cooling-towers.jpeg" class="card-img-top" alt="Градирні">
+                <div class="card-body">
+                    <h5>Градирні</h5>
+                    <p>Висота близько 81 м. Забезпечують охолодження циркуляційної води енергоблоків.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card infrastructure-card">
+                <img src="img/tec5-turbine-hall.jpg" class="card-img-top" alt="Машинний зал">
+                <div class="card-body">
+                    <h5>Машинний зал</h5>
+                    <p>Оснащений турбінами Т-110/120-130 (2 шт.) та Т-250/300-240 (1 шт.).</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ІСТОРІЯ -->
+<section id="history">
+    <h2 class="section-title">Історія розвитку</h2>
+
+    <p>Будівництво Харківської ТЕЦ-5 розпочалося у 1972 році в рамках масштабної програми розвитку енергетичної інфраструктури міста Харкова.</p>
+
+    <p>28 грудня 1979 року було введено в експлуатацію перший енергоблок потужністю 120 МВт. У 1980 році введено другий аналогічний блок.</p>
+
+    <p>2 вересня 1990 року запущено третій енергоблок потужністю 300 МВт — один із найбільш потужних у своєму класі на той час.</p>
+
+    <p>Димова труба висотою 330 метрів стала однією з найвищих промислових споруд України та найвищою у Східній Україні.</p>
+
+    <p>У різні роки станція модернізувалася, впроваджувалися нові системи контролю викидів та автоматизації виробництва.</p>
+
+    <p>Станція є стратегічним об'єктом енергетичної інфраструктури Харківського регіону та відіграє важливу роль у забезпеченні енергетичної безпеки області.</p>
+</section>
+
+<!-- КОНТАКТИ -->
+<section id="contacts">
+    <h2 class="section-title">Контакти</h2>
+    <div class="card p-4 shadow-sm">
+        <p><strong>Повна назва:</strong> ПрАТ «ХАРКІВСЬКА ТЕЦ-5»</p>
+        <p><strong>Телефон:</strong><br>
+            +38 (057) 372-10-29<br>
+            +38 (057) 730-50-59
+        </p>
+        <p><strong>Факс:</strong> +38 (057) 731-42-98</p>
+        <p><strong>Email:</strong> 
+            <a href="mailto:mbox@tec5.kharkov.ua">mbox@tec5.kharkov.ua</a>
+        </p>
+        <p><strong>Адреса:</strong> Харківська область, Харківський район, с. Подвірки</p>
+        <p><strong>Режим роботи:</strong> безперервний виробничий цикл</p>
+    </div>
+</section>
+
+</main>
+
+<footer class="text-center text-white py-4">
+    <div class="container">
+        <p>© 2026і | Інформаційний проєкт</p>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+const toggleBtn = document.getElementById("themeToggle");
+const body = document.body;
+
+if(localStorage.getItem("theme") === "dark") {
+    body.classList.add("dark-mode");
+    toggleBtn.innerHTML = '<i class="fas fa-sun"></i>';
+}
+
+toggleBtn.addEventListener("click", () => {
+    body.classList.toggle("dark-mode");
+
+    if(body.classList.contains("dark-mode")) {
+        localStorage.setItem("theme", "dark");
+        toggleBtn.innerHTML = '<i class="fas fa-sun"></i>';
+    } else {
+        localStorage.setItem("theme", "light");
+        toggleBtn.innerHTML = '<i class="fas fa-moon"></i>';
+    }
+});
+</script>
+
+</body>
+</html>
+

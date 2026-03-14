@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<title>Моніторинг батареї</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="container">
+
+<header>
+<h2>⚡ Підстанція з батареєю</h2>
+Останнє оновлення: <span id="time">--:--:--</span>
+</header>
+
+<div class="card">
+<button id="update" class="btn primary">Оновити</button>
+<button id="auto" class="btn success">Автооновлення</button>
+<span id="autoState">⚪ Вимкнено</span>
+</div>
+
+<div class="dashboard">
+
+<div class="card">
+<h3>🔋 Заряд</h3>
+<div class="progress"><div id="bar" class="bar"></div></div>
+<div><span id="v0" class="big">0</span><span class="unit">%</span></div>
+<div id="s0" class="status">●</div>
+</div>
+
+<div class="card">
+<h3>⚡ Струм</h3>
+<div><span id="v1" class="big">0</span><span class="unit">A</span></div>
+<div id="s1" class="status">●</div>
+</div>
+
+<div class="card">
+<h3>⚡ Напруга</h3>
+<div><span id="v2" class="big">0</span><span class="unit">V</span></div>
+<div id="s2" class="status">●</div>
+</div>
+
+<div class="card">
+<h3>🌡 Температура</h3>
+<div><span id="v3" class="big">0</span><span class="unit">°C</span></div>
+<div id="s3" class="status">●</div>
+</div>
+
+</div>
+
+<div class="panel">
+<h3>📊 Додатково</h3>
+
+<div class="grid">
+<div class="item">Режим <span id="mode">Очікування</span></div>
+<div class="item">Час розряду <span id="discharge">--</span></div>
+<div class="item">Цикли <span id="cycles">1250</span></div>
+<div class="item">SOH <span id="soh">100%</span></div>
+</div>
+
+</div>
+
+</div>
+
+<script src="script"></script>
+
+</body>
+</html>

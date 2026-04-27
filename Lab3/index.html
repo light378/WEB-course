@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Реєстр аварій</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <h1>📋 Реєстр аварій</h1>
+
+    <div class="layout">
+      <!-- Форма -->
+      <section class="card">
+        <h2>📝 Додати аварію</h2>
+        <form action="/submit" method="post" enctype="multipart/form-data" class="form-grid">
+          <label>Дата
+            <input type="date" name="date" required>
+          </label>
+          <label>Час
+            <input type="time" name="time" required>
+          </label>
+          <label>Тип
+            <input type="text" name="type" placeholder="Наприклад: ДТП, пожежа..." required>
+          </label>
+          <label>Адреса
+            <input type="text" name="address" placeholder="вулиця, будівля" required>
+          </label>
+          <label>Опис
+            <input type="text" name="description" placeholder="Короткий опис події" required>
+          </label>
+          <label>Постраждалі (кількість)
+            <input type="number" name="victims" min="0" value="0" required>
+          </label>
+          <label>Фото
+            <input type="file" name="photo" accept="image/*">
+          </label>
+          <button type="submit">✅ Зберегти аварію</button>
+        </form>
+      </section>
+
+      <!-- Таблиця -->
+      <section class="card">
+        <div class="head-row">
+          <h2>🗂️ Зареєстровані аварії</h2>
+          <button type="button" id="refreshBtn">🔄 Оновити</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Дата</th>
+                <th>Час</th>
+                <th>Тип</th>
+                <th>Адреса</th>
+                <th>Опис</th>
+                <th>Постраждалі</th>
+                <th>Фото</th>
+              </tr>
+            </thead>
+            <tbody id="rows">
+              <tr><td colspan="8">Завантаження...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    async function loadRecords() {
+      const rows = document.getElementById("rows");
+      rows.innerHTML = "<tr><td colspan='8'>Завантаження...</td></tr>";
+
+      try {
+        const res = await fetch("/records");
+        const data = await res.json();
+
+        if (!Array.isArray(data) || data.length === 0) {
+          rows.innerHTML = "<tr><td colspan='8'>Немає записів про аварії</td></tr>";
+          return;
+        }
+
+        rows.innerHTML = data.map((item, idx) => {
+          const photoHtml = item.photo
+            ? `<img src="/uploads/${encodeURIComponent(item.photo)}" alt="фото" style="max-width:60px; max-height:60px; border-radius:4px;">`
+            : "—";
+          return `
+            <tr>
+              <td>${idx + 1}</td>
+              <td>${item.date || ""}</td>
+              <td>${item.time || ""}</td>
+              <td>${escapeHtml(item.type || "")}</td>
+              <td>${escapeHtml(item.address || "")}</td>
+              <td>${escapeHtml(item.description || "")}</td>
+              <td>${item.victims ?? 0}</td>
+              <td>${photoHtml}</td>
+            </tr>
+          `;
+        }).join("");
+      } catch (err) {
+        console.error(err);
+        rows.innerHTML = "<tr><td colspan='8'>Помилка завантаження даних</td></tr>";
+      }
+    }
+
+    function escapeHtml(str) {
+      if (!str) return "";
+      return str.replace(/[&<>]/g, function(m) {
+        if (m === "&") return "&amp;";
+        if (m === "<") return "&lt;";
+        if (m === ">") return "&gt;";
+        return m;
+      });
+    }
+
+    document.getElementById("refreshBtn").addEventListener("click", loadRecords);
+    loadRecords();
+  </script>
+</body>
+</html>

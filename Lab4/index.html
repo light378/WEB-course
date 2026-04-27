@@ -1,0 +1,360 @@
+<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BESS – Системи накопичення енергії</title>
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --card: #ffffff;
+      --line: #d9e0ea;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --primary: #1f6feb;
+      --primary-hover: #1859bc;
+      --ok: #0f9d58;
+      --err: #d93025;
+      --radius: 12px;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding: 20px;
+    }
+    .wrap {
+      max-width: 1280px;
+      margin: 0 auto;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 16px;
+      margin-bottom: 14px;
+    }
+    h1 {
+      margin: 0 0 8px;
+      font-size: 24px;
+    }
+    .hint {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .row {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .col-2 { grid-column: span 2; }
+    .col-3 { grid-column: span 3; }
+    .col-4 { grid-column: span 4; }
+    .col-6 { grid-column: span 6; }
+    .col-12 { grid-column: span 12; }
+    @media (max-width: 900px) {
+      .col-2, .col-3, .col-4, .col-6 { grid-column: span 12; }
+    }
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    input, select, button {
+      width: 100%;
+      height: 40px;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      font-size: 14px;
+      padding: 0 12px;
+      background: #fff;
+    }
+    button {
+      cursor: pointer;
+      border: none;
+      background: var(--primary);
+      color: #fff;
+      font-weight: 600;
+    }
+    button:hover { background: var(--primary-hover); }
+    .btn-muted {
+      background: #eef2f7;
+      color: #111827;
+      border: 1px solid var(--line);
+    }
+    .btn-muted:hover { background: #e5ebf3; }
+    .status {
+      margin-top: 8px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .status.ok { color: var(--ok); }
+    .status.err { color: var(--err); }
+    pre {
+      margin: 0;
+      background: #0f172a;
+      color: #e2e8f0;
+      border-radius: 10px;
+      padding: 14px;
+      overflow: auto;
+      min-height: 160px;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      margin-top: 10px;
+    }
+    th, td {
+      border: 1px solid var(--line);
+      padding: 6px;
+      text-align: left;
+    }
+    th {
+      background: #f1f5f9;
+      font-weight: 600;
+    }
+    .small {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 8px;
+    }
+    .filter-group {
+      display: flex;
+      gap: 8px;
+      align-items: flex-end;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1>BESS – Система накопичення енергії (REST API)</h1>
+      <p class="hint">Моніторинг та керування батарейними системами накопичення</p>
+    </div>
+
+    <div class="card">
+      <div class="row">
+        <div class="col-2">
+          <label>ID системи</label>
+          <input id="id" type="number" placeholder="1" />
+        </div>
+        <div class="col-2">
+          <label>Назва (name)</label>
+          <input id="name" placeholder="BESS-1" />
+        </div>
+        <div class="col-2">
+          <label>Ємність, кВт·год</label>
+          <input id="capacity" type="number" placeholder="5000" />
+        </div>
+        <div class="col-2">
+          <label>Потужність, кВт</label>
+          <input id="power" type="number" placeholder="1000" />
+        </div>
+        <div class="col-2">
+          <label>Кількість циклів</label>
+          <input id="cycleCount" type="number" placeholder="125" />
+        </div>
+        <div class="col-2">
+          <label>Температура, °C</label>
+          <input id="temperature" type="number" placeholder="28" />
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-3">
+          <label>Режим (mode)</label>
+          <select id="mode">
+            <option value="">-- обери --</option>
+            <option value="charging">charging</option>
+            <option value="discharging">discharging</option>
+            <option value="idle">idle</option>
+          </select>
+        </div>
+        <div class="col-3">
+          <label>SoC (%)</label>
+          <input id="stateOfCharge" type="number" placeholder="0-100" />
+        </div>
+        <div class="col-3">
+          <label>Потужність заряду, кВт</label>
+          <input id="chargingPower" type="number" placeholder="0" />
+        </div>
+        <div class="col-3">
+          <label>Потужність розряду, кВт</label>
+          <input id="dischargingPower" type="number" placeholder="0" />
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-2"><button onclick="getAll()">GET всі</button></div>
+        <div class="col-2"><button onclick="getOne()">GET по ID</button></div>
+        <div class="col-2"><button onclick="getHistory()">GET історія</button></div>
+        <div class="col-2"><button onclick="postReadings()">POST readings</button></div>
+        <div class="col-2"><button onclick="updateOne()">PUT update</button></div>
+        <div class="col-2"><button class="btn-muted" onclick="removeOne()">DELETE</button></div>
+      </div>
+      <div class="row">
+        <div class="col-3">
+          <label>Фільтр за mode</label>
+          <select id="filterMode">
+            <option value="">всі</option>
+            <option value="charging">charging</option>
+            <option value="discharging">discharging</option>
+            <option value="idle">idle</option>
+          </select>
+        </div>
+        <div class="col-3">
+          <label>Мін. ємність, кВт·год</label>
+          <input id="minCapacity" type="number" placeholder="0" />
+        </div>
+        <div class="col-2"><button onclick="applyFilters()">Застосувати фільтри</button></div>
+        <div class="col-4"></div>
+      </div>
+      <div id="status" class="status">Готово до запитів</div>
+      <div class="small">Для POST readings можна вказати SoC, chargingPower, dischargingPower, temperature, mode. Для PUT оновлюються лише name, capacity, power, cycleCount, temperature.</div>
+    </div>
+
+    <div class="card">
+      <div id="tableBox"></div>
+      <pre id="out">Тут буде JSON результат...</pre>
+    </div>
+  </div>
+
+  <script>
+    const out = document.getElementById("out");
+    const tableBox = document.getElementById("tableBox");
+    const statusEl = document.getElementById("status");
+    const base = "/api/bess";
+
+    function idVal() {
+      return document.getElementById("id").value.trim();
+    }
+
+    function setStatus(text, ok = true) {
+      statusEl.textContent = text;
+      statusEl.className = "status " + (ok ? "ok" : "err");
+    }
+
+    function showJSON(data) {
+      out.textContent = JSON.stringify(data, null, 2);
+    }
+
+    function renderTable(data) {
+      if (!Array.isArray(data)) {
+        tableBox.innerHTML = "";
+        return;
+      }
+      const rows = data.map((b) => `
+        <tr>
+          <td>${b.id}</td>
+          <td>${b.name}</td>
+          <td>${b.capacity}</td>
+          <td>${b.power}</td>
+          <td>${b.stateOfCharge}%</td>
+          <td>${b.chargingPower}</td>
+          <td>${b.dischargingPower}</td>
+          <td>${b.cycleCount}</td>
+          <td>${b.temperature}°C</td>
+          <td>${b.mode}</td>
+          <td>${new Date(b.lastUpdated).toLocaleString()}</td>
+        </tr>
+      `).join("");
+      tableBox.innerHTML = `
+        <table>
+          <thead>
+            <tr><th>ID</th><th>Name</th><th>кВт·год</th><th>кВт</th><th>SoC</th><th>Заряд(кВт)</th><th>Розряд(кВт)</th><th>Цикли</th><th>°C</th><th>Режим</th><th>Оновлено</th></tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+      `;
+    }
+
+    async function request(url, options = {}) {
+      try {
+        const res = await fetch(url, options);
+        const data = await res.json();
+        showJSON(data);
+        renderTable(Array.isArray(data) ? data : null);
+        if (res.ok) setStatus("Запит виконано успішно");
+        else setStatus("Помилка: " + (data.error || JSON.stringify(data)), false);
+      } catch (e) {
+        setStatus("Помилка мережі: " + e.message, false);
+        showJSON({ error: e.message });
+        tableBox.innerHTML = "";
+      }
+    }
+
+    function getAll() {
+      request(base);
+    }
+
+    function getOne() {
+      request(`${base}/${idVal()}`);
+    }
+
+    function getHistory() {
+      request(`${base}/${idVal()}/history`);
+    }
+
+    function postReadings() {
+      const body = {};
+      const soc = document.getElementById("stateOfCharge").value.trim();
+      const chp = document.getElementById("chargingPower").value.trim();
+      const dchp = document.getElementById("dischargingPower").value.trim();
+      const temp = document.getElementById("temperature").value.trim();
+      const mode = document.getElementById("mode").value;
+      if (soc !== "") body.stateOfCharge = Number(soc);
+      if (chp !== "") body.chargingPower = Number(chp);
+      if (dchp !== "") body.dischargingPower = Number(dchp);
+      if (temp !== "") body.temperature = Number(temp);
+      if (mode !== "") body.mode = mode;
+      request(`${base}/${idVal()}/readings`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body)
+      });
+    }
+
+    function updateOne() {
+      const body = {};
+      const name = document.getElementById("name").value.trim();
+      const capacity = document.getElementById("capacity").value.trim();
+      const power = document.getElementById("power").value.trim();
+      const cycleCount = document.getElementById("cycleCount").value.trim();
+      const temperature = document.getElementById("temperature").value.trim();
+      if (name) body.name = name;
+      if (capacity) body.capacity = Number(capacity);
+      if (power) body.power = Number(power);
+      if (cycleCount) body.cycleCount = Number(cycleCount);
+      if (temperature) body.temperature = Number(temperature);
+      request(`${base}/${idVal()}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body)
+      });
+    }
+
+    function removeOne() {
+      request(`${base}/${idVal()}`, { method: "DELETE" });
+    }
+
+    function applyFilters() {
+      const mode = document.getElementById("filterMode").value;
+      const minCap = document.getElementById("minCapacity").value.trim();
+      let url = base;
+      const params = new URLSearchParams();
+      if (mode) params.append("mode", mode);
+      if (minCap !== "") params.append("minCapacity", minCap);
+      if (params.toString()) url += "?" + params.toString();
+      request(url);
+    }
+
+    getAll();
+  </script>
+</body>
+</html>

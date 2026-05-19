@@ -1,0 +1,22 @@
+{
+  "name": "wind-simple",
+  "version": "1.0.0",
+  "description": "Simplified secure wind power platform",
+  "main": "wind_app.js",
+  "scripts": {
+    "start": "node wind_app.js"
+  },
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "cookie-parser": "^1.4.7",
+    "csurf": "^1.11.0",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "express-rate-limit": "^7.1.5",
+    "express-session": "^1.17.3",
+    "express-validator": "^7.0.1",
+    "helmet": "^7.1.0",
+    "passport": "^0.6.0",
+    "passport-local": "^1.0.0"
+  }
+}

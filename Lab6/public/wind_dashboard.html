@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вітрова електростанція</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .card { margin-bottom: 20px; }
+        .hidden { display: none; }
+        .toast-msg { position: fixed; top: 20px; right: 20px; z-index: 9999; padding: 10px 20px; border-radius: 5px; color: white; }
+        .toast-success { background-color: #28a745; }
+        .toast-error { background-color: #dc3545; }
+    </style>
+</head>
+<body class="container mt-4">
+    <div id="toast" class="toast-msg" style="display:none;"></div>
+    <h1>🌬️ Вітрова електростанція</h1>
+    
+    <div id="authPanel">
+        <div class="card">
+            <div class="card-header">Авторизація</div>
+            <div class="card-body">
+                <form id="loginForm">
+                    <input type="hidden" id="csrfTokenInput">
+                    <div class="mb-3">
+                        <label>Email</label>
+                        <input type="email" id="loginEmail" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label>Пароль</label>
+                        <input type="password" id="loginPassword" class="form-control" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Увійти</button>
+                    <button type="button" id="showRegisterBtn" class="btn btn-link">Реєстрація</button>
+                    <button type="button" id="createTestUserBtn" class="btn btn-secondary btn-sm">Створити тестового (tech)</button>
+                </form>
+                <form id="registerForm" class="hidden">
+                    <div class="mb-3">
+                        <label>Email</label>
+                        <input type="email" id="regEmail" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label>Пароль (мін. 8 символів, цифра)</label>
+                        <input type="password" id="regPassword" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label>Ім'я</label>
+                        <input type="text" id="regName" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label>Роль</label>
+                        <select id="regRole" class="form-control">
+                            <option value="technician">Технік</option>
+                            <option value="engineer">Інженер</option>
+                            <option value="manager">Менеджер</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-success">Зареєструватись</button>
+                    <button type="button" id="showLoginBtn" class="btn btn-link">Назад до входу</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="dashboard" class="hidden">
+        <div class="alert alert-info">Ви ввійшли як <span id="userName"></span> (роль: <span id="userRole"></span>)</div>
+        <button id="logoutBtn" class="btn btn-danger mb-3">Вийти</button>
+        <div class="card">
+            <div class="card-header">Турбіни</div>
+            <div class="card-body" id="turbinesList"></div>
+        </div>
+        <div id="engineerPanel" class="card hidden">
+            <div class="card-header">⚙️ Налаштування турбін (інженер/менеджер)</div>
+            <div class="card-body" id="settingsPanel"></div>
+        </div>
+        <div id="managerPanel" class="card hidden">
+            <div class="card-header">📊 Звіти (менеджер)</div>
+            <div class="card-body" id="reportsPanel"></div>
+        </div>
+        <div id="techPanel" class="card hidden">
+            <div class="card-header">⚠️ Сповіщення про несправності (технік)</div>
+            <div class="card-body" id="alertsPanel"></div>
+        </div>
+    </div>
+
+    <script>
+        let csrfToken = null;
+        function showMessage(text, isError = false) {
+            const toast = document.getElementById('toast');
+            toast.textContent = text;
+            toast.className = 'toast-msg ' + (isError ? 'toast-error' : 'toast-success');
+            toast.style.display = 'block';
+            setTimeout(() => toast.style.display = 'none', 4000);
+        }
+
+        async function fetchCSRF() {
+            try {
+                const res = await fetch('/api/csrf-token');
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+                const data = await res.json();
+                csrfToken = data.csrfToken;
+                document.getElementById('csrfTokenInput').value = csrfToken;
+                console.log('CSRF token отримано:', csrfToken);
+            } catch (err) {
+                console.error('Помилка отримання CSRF:', err);
+                showMessage('Не вдалося отримати CSRF токен. Перевірте сервер.', true);
+            }
+        }
+
+        async function handleLogin(e) {
+            e.preventDefault();
+            if (!csrfToken) {
+                showMessage('CSRF токен не завантажено, зачекайте...', true);
+                return;
+            }
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            try {
+                const res = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'CSRF-Token': csrfToken
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    showMessage('Вхід успішний!');
+                    loadDashboard(data.user);
+                } else if (res.status === 401) {
+                    showMessage('Невірний email або пароль', true);
+                } else {
+                    const err = await res.json();
+                    showMessage('Помилка: ' + (err.error || err.message), true);
+                }
+            } catch (err) {
+                showMessage('Мережева помилка: ' + err.message, true);
+            }
+        }
+
+        async function handleRegister(e) {
+            e.preventDefault();
+            const email = document.getElementById('regEmail').value;
+            const password = document.getElementById('regPassword').value;
+            const name = document.getElementById('regName').value;
+            const role = document.getElementById('regRole').value;
+            try {
+                const res = await fetch('/api/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password, name, role })
+                });
+                if (res.ok) {
+                    showMessage('Реєстрація успішна! Тепер увійдіть.');
+                    document.getElementById('showLoginBtn').click();
+                } else {
+                    const err = await res.json();
+                    showMessage('Помилка: ' + JSON.stringify(err.errors || err), true);
+                }
+            } catch (err) {
+                showMessage('Помилка: ' + err.message, true);
+            }
+        }
+
+        async function createTestUser() {
+            try {
+                const res = await fetch('/api/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email: 'tech@wind.com',
+                        password: 'TechPass123',
+                        name: 'Test Technician',
+                        role: 'technician'
+                    })
+                });
+                if (res.ok) {
+                    showMessage('Тестовий технік створений: tech@wind.com / TechPass123');
+                    document.getElementById('loginEmail').value = 'tech@wind.com';
+                    document.getElementById('loginPassword').value = 'TechPass123';
+                } else {
+                    const err = await res.json();
+                    showMessage('Не вдалося створити: ' + JSON.stringify(err.errors || err), true);
+                }
+            } catch (err) {
+                showMessage('Помилка: ' + err.message, true);
+            }
+        }
+
+        async function loadDashboard(user) {
+            document.getElementById('authPanel').classList.add('hidden');
+            document.getElementById('dashboard').classList.remove('hidden');
+            document.getElementById('userName').innerText = user.name;
+            document.getElementById('userRole').innerText = user.role;
+
+            if (user.role === 'engineer' || user.role === 'manager') {
+                document.getElementById('engineerPanel').classList.remove('hidden');
+                loadSettingsPanel();
+            }
+            if (user.role === 'manager') {
+                document.getElementById('managerPanel').classList.remove('hidden');
+                loadReports();
+            }
+            if (user.role === 'technician') {
+                document.getElementById('techPanel').classList.remove('hidden');
+                loadTechPanel();
+            }
+            loadTurbines();
+        }
+
+        async function loadTurbines() {
+            const res = await fetch('/api/turbines');
+            if (!res.ok) return showMessage('Не вдалося завантажити турбіни', true);
+            const turbines = await res.json();
+            const container = document.getElementById('turbinesList');
+            container.innerHTML = '<ul class="list-group">' + turbines.map(t => `<li class="list-group-item">${t.name}: ${t.power_kw} кВт, вітер ${t.wind_speed} м/с, кут лопаті ${t.bladeAngle}°</li>`).join('') + '</ul>';
+        }
+
+        async function loadSettingsPanel() {
+            const res = await fetch('/api/turbines');
+            if (!res.ok) return;
+            const turbines = await res.json();
+            const container = document.getElementById('settingsPanel');
+            container.innerHTML = turbines.map(t => `
+                <div class="mb-2">
+                    <strong>${t.name}</strong> поточний кут: ${t.bladeAngle}°
+                    <button class="btn btn-sm btn-primary change-angle" data-id="${t.id}">Змінити кут</button>
+                </div>
+            `).join('');
+            document.querySelectorAll('.change-angle').forEach(btn => {
+                btn.addEventListener('click', () => changeBladeAngle(btn.dataset.id));
+            });
+        }
+
+        async function changeBladeAngle(id) {
+            const newAngle = prompt('Новий кут лопаті (0-30):');
+            if (newAngle === null) return;
+            const angle = parseInt(newAngle);
+            if (isNaN(angle) || angle < 0 || angle > 30) {
+                showMessage('Кут має бути числом від 0 до 30', true);
+                return;
+            }
+            try {
+                const res = await fetch(`/api/turbines/${id}/settings`, {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'CSRF-Token': csrfToken
+                    },
+                    body: JSON.stringify({ bladeAngle: angle })
+                });
+                if (res.ok) {
+                    showMessage('Кут лопаті змінено!');
+                    loadTurbines();
+                    if (document.getElementById('engineerPanel').classList.contains('hidden') === false) {
+                        loadSettingsPanel();
+                    }
+                } else {
+                    const err = await res.json();
+                    showMessage('Помилка: ' + (err.error || err.message), true);
+                }
+            } catch (err) {
+                showMessage('Помилка: ' + err.message, true);
+            }
+        }
+
+        async function loadReports() {
+            const res = await fetch('/api/reports');
+            if (!res.ok) return showMessage('Не вдалося завантажити звіти', true);
+            const rep = await res.json();
+            document.getElementById('reportsPanel').innerHTML = `
+                <p>Загальна потужність: ${rep.totalPowerMW} МВт</p>
+                <p>Кількість турбін: ${rep.turbinesCount}</p>
+                <p>Сповіщень: ${rep.alertsCount}</p>
+            `;
+        }
+
+        async function loadTechPanel() {
+            const container = document.getElementById('alertsPanel');
+            container.innerHTML = `
+                <form id="alertForm">
+                    <div class="mb-3">
+                        <label>ID турбіни</label>
+                        <input type="number" id="alertTurbineId" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label>Повідомлення</label>
+                        <textarea id="alertMessage" class="form-control" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-warning">Надіслати сповіщення</button>
+                </form>
+            `;
+            document.getElementById('alertForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const turbineId = document.getElementById('alertTurbineId').value;
+                const message = document.getElementById('alertMessage').value;
+                try {
+                    const res = await fetch('/api/alerts', {
+                        method: 'POST',
+                        headers: { 
+                            'Content-Type': 'application/json',
+                            'CSRF-Token': csrfToken
+                        },
+                        body: JSON.stringify({ turbineId: parseInt(turbineId), message })
+                    });
+                    if (res.ok) showMessage('Сповіщення надіслано');
+                    else showMessage('Помилка при відправці', true);
+                } catch (err) {
+                    showMessage('Помилка: ' + err.message, true);
+                }
+            });
+        }
+
+        document.getElementById('loginForm').addEventListener('submit', handleLogin);
+        document.getElementById('registerForm').addEventListener('submit', handleRegister);
+        document.getElementById('showRegisterBtn').addEventListener('click', () => {
+            document.getElementById('loginForm').classList.add('hidden');
+            document.getElementById('registerForm').classList.remove('hidden');
+        });
+        document.getElementById('showLoginBtn').addEventListener('click', () => {
+            document.getElementById('registerForm').classList.add('hidden');
+            document.getElementById('loginForm').classList.remove('hidden');
+        });
+        document.getElementById('createTestUserBtn').addEventListener('click', createTestUser);
+        document.getElementById('logoutBtn').addEventListener('click', async () => {
+            await fetch('/api/logout', { method: 'POST' });
+            location.reload();
+        });
+
+        fetchCSRF();
+    </script>
+</body>
+</html>

@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Генератор і сховище паролів</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="app-shell">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">Локальний менеджер доступів</p>
+        <h1>Password Vault</h1>
+      </div>
+      <div class="status-pill" id="vaultStatus">SQLite + AES-256-GCM</div>
+    </header>
+
+    <section class="auth-panel" id="authPanel">
+      <div class="auth-copy">
+        <p class="eyebrow">Особистий кабінет</p>
+        <h2>Увійдіть або створіть акаунт</h2>
+        <p>Пароль акаунта зберігається в базі тільки як хеш. Записи сховища прив'язуються до вашого користувача.</p>
+      </div>
+
+      <form class="auth-form" id="authForm">
+        <div class="auth-tabs" role="tablist" aria-label="Режим авторизації">
+          <button class="tab-button active" id="loginTab" type="button">Вхід</button>
+          <button class="tab-button" id="registerTab" type="button">Реєстрація</button>
+        </div>
+
+        <label class="field">
+          <span>Email</span>
+          <input id="authEmail" type="email" autocomplete="email" required />
+        </label>
+
+        <label class="field">
+          <span>Пароль акаунта</span>
+          <input id="authPassword" type="password" autocomplete="current-password" required minlength="8" />
+        </label>
+
+        <button id="authSubmit" type="submit">Увійти</button>
+        <p id="authMessage" class="message" role="status"></p>
+      </form>
+    </section>
+
+    <section class="cabinet hidden" id="cabinet">
+      <div class="cabinet-bar">
+        <div>
+          <p class="eyebrow">Кабінет</p>
+          <h2 id="userEmail">Ваше сховище</h2>
+        </div>
+        <button class="ghost-button" id="logout" type="button">Вийти</button>
+      </div>
+
+      <section class="workspace">
+        <article class="panel generator-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Генератор</p>
+              <h2>Новий пароль</h2>
+            </div>
+            <button class="icon-button" id="copyGenerated" type="button" title="Скопіювати пароль" aria-label="Скопіювати пароль">
+              <span aria-hidden="true">⧉</span>
+            </button>
+          </div>
+
+          <label class="field">
+            <span>Довжина</span>
+            <input id="length" type="number" value="18" min="8" max="128" />
+          </label>
+
+          <div class="options-grid" aria-label="Набори символів">
+            <label><input id="upper" type="checkbox" checked /> Великі літери</label>
+            <label><input id="lower" type="checkbox" checked /> Малі літери</label>
+            <label><input id="numbers" type="checkbox" checked /> Цифри</label>
+            <label><input id="symbols" type="checkbox" checked /> Символи</label>
+          </div>
+
+          <div class="password-output">
+            <input id="generated" type="text" readonly placeholder="Натисніть «Згенерувати»" />
+            <button id="gen" type="button">Згенерувати</button>
+          </div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Збереження</p>
+              <h2>Дані запису</h2>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <label class="field">
+              <span>Назва</span>
+              <input id="title" type="text" placeholder="Наприклад: GitHub" autocomplete="off" />
+            </label>
+            <label class="field">
+              <span>Логін</span>
+              <input id="username" type="text" placeholder="email або username" autocomplete="off" />
+            </label>
+          </div>
+
+          <label class="field">
+            <span>Пароль</span>
+            <input id="toStore" type="text" autocomplete="off" />
+          </label>
+
+          <label class="field">
+            <span>Майстер-пароль для шифрування запису</span>
+            <input id="master" type="password" autocomplete="new-password" />
+          </label>
+
+          <label class="field">
+            <span>Нотатки</span>
+            <textarea id="notes" rows="3" placeholder="Опціонально"></textarea>
+          </label>
+
+          <div class="actions">
+            <button id="store" type="button">Зберегти запис</button>
+            <p id="storeResult" class="message" role="status"></p>
+          </div>
+        </article>
+      </section>
+
+      <section class="vault-section">
+        <div class="vault-header">
+          <div>
+            <p class="eyebrow">Сховище</p>
+            <h2>Збережені паролі</h2>
+          </div>
+          <div class="vault-controls">
+            <input id="listMaster" type="password" placeholder="Майстер-пароль для показу" autocomplete="current-password" />
+            <button id="refresh" type="button">Оновити</button>
+          </div>
+        </div>
+        <div id="list" class="password-list" aria-live="polite"></div>
+      </section>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
